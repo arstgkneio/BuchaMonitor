@@ -20,10 +20,15 @@ module_dir = os.path.realpath(os.path.dirname(module_path))
 path = module_dir + "/bucha_logs"
 file_prefix = 'bucha_log'
 
+# Padding character
+padding_char = '_'
 
+# Create a list populated with temperature values
+tempList = []   #TODO: replace list with dictionary using date/time as the keys
 
 # FUNCTIONS
 #=======================================================================================================================================
+
 
 # Function to retrieve the last line from a file
 def get_last_line():
@@ -38,8 +43,6 @@ def get_last_line():
         last_line = (f.readline().decode())
         return(last_line)
     
-# Padding character
-padding_char = '_'
 
 # Function to update background color variable based on air quality index
 def update_bg_color(PM_type):
@@ -61,11 +64,9 @@ def update_title_label():
     title_label.after(5000, update_title_label)
 
 
-def update_clock_label():
-    clock_label['bg'] = update_bg_color('0')
-    
-    clock_label.after(5000, update_clock_label)
 
+# TEMPERATURE 
+#======================================================================================================================================
 def update_temp_title_label():
     temp_title_label['bg'] = update_bg_color('0')
     
@@ -85,12 +86,53 @@ def update_temp_unit_label():
     
     temp_unit_label.after(5000, update_temp_unit_label)
 
+def update_min_temp_title_label():
+    min_temp_title_label['bg'] = update_bg_color('0')
+    
+    min_temp_title_label.after(5000, update_min_temp_title_label)
+
+def update_min_temp_data_label():
+    raw_data_line = get_last_line().rstrip()
+    temperature = raw_data_line.split(',')[1]
+
+    temperature = float(temperature)
+    tempList.append(temperature)
+
+    # TODO: remove temperature values older than 24 hours
+    # while date of first measurement > 24 hours + current time
+    #     if date of first measurement > 24 hours + current time
+    #         delete first measurement      
+
+    while len(tempList) > 1439: #TEMPORARY WORKAROUND, ONLY WORKS IF PROGRAM RUNS FOR 24+ HOURS CONTINUOUSLY
+        del tempList[0]
+
+    min_temp_data_label['bg'] = update_bg_color('0')
+
+    min_temp_data_label['text'] = "{:6.1f}".format(min(tempList))
+
+    min_temp_data_label.after(5000, update_min_temp_data_label)
+
+
+def update_min_temp_unit_label():
+    min_temp_unit_label['bg'] = update_bg_color('0')
+    
+    min_temp_unit_label.after(5000, update_min_temp_unit_label)
+
+
+# TIME 
+#=====================================================================================================================
+
 
 # Function to update clock_label widget with system clock reading
 def display_time():
     current_time = tm.strftime('%I:%M:%S %p')
     clock_label['text'] = current_time
     clock_label.after(200, display_time)
+
+def update_clock_label():
+    clock_label['bg'] = update_bg_color('0')
+    
+    clock_label.after(5000, update_clock_label)
 
 # Function to update time_last_measurement widget
 # based on dt value from latest recording
@@ -167,13 +209,30 @@ temp_unit_label.grid(row=3, column=2, sticky='W')
 update_temp_unit_label()
 
 
+# Create min_temp_title_label widget
+min_temp_title_label = tk.Label(my_window, text='Min. Temp'.ljust(23,padding_char), font='courier 45', fg='gray')
+min_temp_title_label.grid(row=4, column=0, sticky='W')
+update_min_temp_title_label()
+
+# Creates min_temp_data_label widget
+min_temp_data_label = tk.Label(my_window, font='courier 45 bold', fg='gray')
+min_temp_data_label.grid(row=4, column=1)
+update_min_temp_data_label()
+
+# Create min_temp_unit_label widget
+degree_sign = u'\N{DEGREE SIGN}' #unicode
+min_temp_unit_label = tk.Label(my_window, text=degree_sign+'C', font='courier 45', fg='gray')
+min_temp_unit_label.grid(row=4, column=2, sticky='W')
+update_min_temp_unit_label()
+
+
 # Create time_last_measurement_label widget
-time_last_measurement_label = tk.Label(my_window, text = 'last update:', font = 'courier 25', fg='gray')
+time_last_measurement_label = tk.Label(my_window, text = 'updated:', font = 'courier 25', fg='gray')
 time_last_measurement_label.grid(row=100, column=1)
 update_time_last_measurement_label()
 
 # Create time_last_measurement_data_label widget
-time_last_measurement_data_label = tk.Label(my_window, font = 'courier 25 bold', fg ='gray')
+time_last_measurement_data_label = tk.Label(my_window, font = 'ariel 25', fg ='gray')
 time_last_measurement_data_label.grid(row=100, column=2, columnspan=2)
 update_time_last_measurement_data_label()
 
