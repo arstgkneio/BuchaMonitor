@@ -8,7 +8,7 @@ import inspect
 
 ### SETTINGS ###
 
-SLEEP_DURATION = 5 #seconds
+SLEEP_DURATION = 60 #seconds
 log_name_prefix = "bucha_log"
 module_path = inspect.getfile(inspect.currentframe())
 module_dir = os.path.realpath(os.path.dirname(module_path))
