@@ -45,7 +45,7 @@ def create_header(fn):
     if os.path.exists(fn):
         header = ""
     else:
-        header = "date & time, temperature\n"
+        header = "date_time,temperature\n"
   
     return header 
 

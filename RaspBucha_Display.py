@@ -4,6 +4,7 @@ import datetime
 import os
 import glob
 import inspect
+import pandas as pd
 
 # SETTINGS
 #=======================================================================================================================================
@@ -24,13 +25,13 @@ file_prefix = 'bucha_log'
 padding_char = '_'
 
 # Create a list populated with temperature values
-tempList = []   #TODO: replace list with dictionary using date/time as the keys
+#tempList = []   #TODO: replace list with dictionary using date/time as the keys
 
 # FUNCTIONS
 #=======================================================================================================================================
 
 
-# Function to retrieve the last line from a file
+# Function to retrieve the last line from most recent file
 def get_last_line():
     file_list = glob.glob(path + '/' + file_prefix + '*.csv')
     file_list.sort()
@@ -42,7 +43,24 @@ def get_last_line():
             f.seek(-2, os.SEEK_CUR)
         last_line = (f.readline().decode())
         return(last_line)
+
+# Function to determine maximum and minimum temperature values in file
+def get_min_max_temp():
+    file_list = glob.glob(path + '/' + file_prefix + '*.csv')
+    file_list.sort()
+    datafile = file_list[-1] # most recent data file
+    datafile2 = file_list[-2] # second most recent data file
     
+    df = pd.read_csv(datafile) # populates dataframe
+    df2 = pd.read_csv(datafile2)
+
+    min_temp1 = df[' temperature'].min()
+    max_temp1 = df[' temperature'].max()
+
+    min_temp2 = df2[' temperature'].min()
+    max_temp2 = df2[' temperature'].max()
+
+    if 
 
 # Function to update background color variable based on air quality index
 def update_bg_color(PM_type):
