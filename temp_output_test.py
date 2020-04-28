@@ -138,5 +138,6 @@ while True:
     addNum(bucha_temp)
     getMax()
     log_buch_temp()
+    print("recording successful")
     time.sleep(SLEEP_DURATION)
 
