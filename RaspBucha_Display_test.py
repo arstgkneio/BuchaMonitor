@@ -36,7 +36,7 @@ def get_last_line():
     file_list = glob.glob(path + '/' + file_prefix + '*.csv')
     file_list.sort()
     datafile = file_list[-1] #most recent data file
-    
+
     with open(datafile, 'rb') as f:
         f.seek(-2, os.SEEK_END)
         while f.read(1) != b'\n':
@@ -63,7 +63,7 @@ def get_min_max_temp():
 
 # Function to update background color variable based on air quality index
 def update_bg_color(PM_type):
-            
+
     aqi_color = 'black'
 
     return(aqi_color)
@@ -71,22 +71,22 @@ def update_bg_color(PM_type):
 
 def update_my_window_label():
     my_window['bg'] = update_bg_color('0')
-    
+
     my_window.after(5000, update_my_window_label)
 
 
 def update_title_label():
     title_label['bg'] = update_bg_color('0')
-    
+
     title_label.after(5000, update_title_label)
 
 
 
-# TEMPERATURE 
+# TEMPERATURE
 #======================================================================================================================================
 def update_temp_title_label():
     temp_title_label['bg'] = update_bg_color('0')
-    
+
     temp_title_label.after(5000, update_temp_title_label)
 
 def update_temp_data_label():
@@ -95,33 +95,29 @@ def update_temp_data_label():
     temp_data_label['text'] = "{:6.1f}".format(float(temperature))
 
     temp_data_label['bg'] = update_bg_color('0')
-    
+
     temp_data_label.after(5000, update_temp_data_label)
 
 def update_temp_unit_label():
     temp_unit_label['bg'] = update_bg_color('0')
-    
+
     temp_unit_label.after(5000, update_temp_unit_label)
 
 def update_min_temp_title_label():
     min_temp_title_label['bg'] = update_bg_color('0')
-    
+
     min_temp_title_label.after(5000, update_min_temp_title_label)
+
+def update_max_temp_title_label():
+    max_temp_title_label['bg'] = update_bg_color('0')
+
+    max_temp_title_label.after(5000, update_max_temp_title_label)
 
 def update_min_temp_data_label():
     raw_data_line = get_last_line().rstrip()
     temperature = raw_data_line.split(',')[2]
 
     temperature = float(temperature)
-    #tempList.append(temperature)
-
-    # TODO: remove temperature values older than 24 hours
-    # while date of first measurement > 24 hours + current time
-    #     if date of first measurement > 24 hours + current time
-    #         delete first measurement      
-
-    # while len(tempList) > 1439: #TEMPORARY WORKAROUND, ONLY WORKS IF PROGRAM RUNS FOR 24+ HOURS CONTINUOUSLY
-    #     del tempList[0]
 
     min_temp_data_label['bg'] = update_bg_color('0')
 
@@ -129,14 +125,31 @@ def update_min_temp_data_label():
 
     min_temp_data_label.after(5000, update_min_temp_data_label)
 
+def update_max_temp_data_label():
+    raw_data_line = get_last_line().rstrip()
+    temperature = raw_data_line.split(',')[3]
+
+    temperature = float(temperature)
+
+    max_temp_data_label['bg'] = update_bg_color('0')
+
+    max_temp_data_label['text'] = "{:6.1f}".format(temperature)
+
+    max_temp_data_label.after(5000, update_max_temp_data_label)
+
 
 def update_min_temp_unit_label():
     min_temp_unit_label['bg'] = update_bg_color('0')
-    
+
     min_temp_unit_label.after(5000, update_min_temp_unit_label)
 
+def update_max_temp_unit_label():
+    max_temp_unit_label['bg'] = update_bg_color('0')
 
-# TIME 
+    max_temp_unit_label.after(5000, update_max_temp_unit_label)
+
+
+# TIME
 #=====================================================================================================================
 
 
@@ -148,7 +161,7 @@ def display_time():
 
 def update_clock_label():
     clock_label['bg'] = update_bg_color('0')
-    
+
     clock_label.after(5000, update_clock_label)
 
 # Function to update time_last_measurement widget
@@ -167,7 +180,7 @@ def update_time_last_measurement_data_label():
 
 def update_time_last_measurement_label():
     time_last_measurement_label['bg'] = update_bg_color('0')
-    
+
     time_last_measurement_label.after(5000, update_time_last_measurement_label)
 
 
@@ -180,7 +193,7 @@ def update_time_last_measurement_label():
 # Create the main window and set its attributes
 my_window = tk.Tk()
 my_window.title('RaspBucha Monitor')
-my_window['bg']=update_bg_color('0') 
+my_window['bg']=update_bg_color('0')
 
 # Checks if display resolution has been set manually
 if my_resolution == 0:
@@ -227,20 +240,36 @@ update_temp_unit_label()
 
 
 # Create min_temp_title_label widget
-min_temp_title_label = tk.Label(my_window, text='Max. Temperature'.ljust(23,padding_char), font='courier 45', fg='gray')
+min_temp_title_label = tk.Label(my_window, text='Min. Temperature'.ljust(23,padding_char), font='courier 45', fg='gray')
 min_temp_title_label.grid(row=4, column=0, sticky='W')
 update_min_temp_title_label()
+
+# Create max_temp_title_label widget
+max_temp_title_label = tk.Label(my_window, text='Max. Temperature'.ljust(23,padding_char), font='courier 45', fg='gray')
+max_temp_title_label.grid(row=5, column=0, sticky='W')
+update_max_temp_title_label()
 
 # Creates min_temp_data_label widget
 min_temp_data_label = tk.Label(my_window, font='courier 45 bold', fg='gray')
 min_temp_data_label.grid(row=4, column=1)
 update_min_temp_data_label()
 
+# Creates max_temp_data_label widget
+max_temp_data_label = tk.Label(my_window, font='courier 45 bold', fg='gray')
+max_temp_data_label.grid(row=5, column=1)
+update_max_temp_data_label()
+
 # Create min_temp_unit_label widget
 degree_sign = u'\N{DEGREE SIGN}' #unicode
 min_temp_unit_label = tk.Label(my_window, text=degree_sign+'C', font='courier 45', fg='gray')
 min_temp_unit_label.grid(row=4, column=2, sticky='W')
 update_min_temp_unit_label()
+
+# Create max_temp_unit_label widget
+degree_sign = u'\N{DEGREE SIGN}' #unicode
+max_temp_unit_label = tk.Label(my_window, text=degree_sign+'C', font='courier 45', fg='gray')
+max_temp_unit_label.grid(row=5, column=2, sticky='W')
+update_max_temp_unit_label()
 
 
 # Create time_last_measurement_label widget
@@ -257,4 +286,3 @@ update_time_last_measurement_data_label()
 
 # Initiate the window's main loop that waits for user's actions
 my_window.mainloop()
-
