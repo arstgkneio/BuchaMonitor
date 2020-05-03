@@ -42,6 +42,11 @@ device_file = device_folder + '/w1_slave'
 
 #### FUNCTIONS ####
 
+# populate rolling window with last 24 hours worth of data
+
+def populateWindow():
+
+
 # min/max temp functions
 def addNum(n):
     global window

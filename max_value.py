@@ -59,10 +59,10 @@ def getMax():
 
     return max
 
-# random.seed()
-# for i in range(1000000):
-#     val = int(1000 * random.random())
-#     addNum(val)
-#     newmax = getMax()
-
-# print("%d cached, %d non-cached"%(statCache,statNonCache))
+random.seed()
+for i in range(1000000):
+    val = int(1000 * random.random())
+    addNum(val)
+    newmax = getMax()
+print(newmax)
+print("%d cached, %d non-cached"%(statCache,statNonCache))
