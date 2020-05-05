@@ -1,4 +1,4 @@
-date_time,temperature,min_temp,max_temp
+date & time, temperature
 2020-04-28 00:00:08.283035,23.5
 2020-04-28 00:01:10.044949,23.5
 2020-04-28 00:02:11.882450,23.5

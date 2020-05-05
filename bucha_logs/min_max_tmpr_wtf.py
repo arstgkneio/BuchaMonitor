@@ -1,9 +1,19 @@
 import datetime
+import os
 import glob
+import inspect
 
 # Timedelta object for a sample window of the desired length expressed in hours
 window_hrs = 24
 inclusion_period_length = datetime.timedelta(hours=window_hrs)
+file_prefix = 'bucha_log'
+
+# Gets the canonical path, eliminating any symbolic links
+module_path = inspect.getfile(inspect.currentframe())
+
+# Builds working directory using canonical path
+module_dir = os.path.realpath(os.path.dirname(module_path))
+path = module_dir + "/bucha_logs"
 
 # Datetime object for the current date and time
 current_datetime = datetime.datetime.now()
@@ -13,15 +23,37 @@ current_datetime = datetime.datetime.now()
 datetime_format = '%Y-%m-%d %H:%M:%S.%f'
 
 # Create a file handle for the file that will contain the sample data
-window_data_filename = 'window_data.csv'
-window_data_out_fh = open(window_data_filename, 'w')
+#window_data_filename = 'window_data.csv'
+#window_data_out_fh = open(window_data_filename, 'w')
 
 # Opbtain the list of the filenames for the files that contain the
 # temperature data according to the length of the window
-tmpr_data_file_name_prefix = 'bucha_log_'
-number_of_files = int(window_hrs/24)+1
-file_list = glob.glob(tmpr_data_file_name_prefix + "*")[-number_of_files:]
+#tmpr_data_file_name_prefix = 'bucha_log_'
+# number_of_files = int(window_hrs/24)+1
+#
+# print("The number of data files is:", number_of_files)
+#
+# file_list = sorted(glob.glob(path + '/' + file_prefix + '*.csv'))
+# print(file_list)
+# #file_list.sort()
+# file_list = file_list[-number_of_files:]
+#
+# print(file_list)
+file_list_test = path + "/" + file_prefix
+print(file_list_test)
+file_list = glob.glob(path + '/' + file_prefix + '*.csv')
+#print(file_list)
+file_list.sort()
+#print(file_list)
+datafile = file_list[-1] #most recent data file
+#print(file_list)
 
+with open(datafile, 'rb') as f:
+    f.seek(-2, os.SEEK_END)
+    while f.read(1) != b'\n':
+        f.seek(-2, os.SEEK_CUR)
+    last_line = (f.readline().decode())
+    print(last_line)
 
 # Itterate through the list of the data files to
 # identify records that fall within the sample window
