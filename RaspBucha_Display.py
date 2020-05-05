@@ -4,12 +4,17 @@ import datetime
 import os
 import glob
 import inspect
-#import pandas as pd
+import extrema
+
+#===============================================================================
+#TODO: make widget displaying time corresponding to min/max temp values
+#===============================================================================
 
 # SETTINGS
 #=======================================================================================================================================
 my_resolution = 0  #auto-detects if 0
 fullscreen_boolean = False
+MIN_MAX_TIME_RANGE = 24
 
 # Gets the canonical path, eliminating any symbolic links
 module_path = inspect.getfile(inspect.currentframe())
@@ -24,9 +29,6 @@ file_prefix = 'bucha_log'
 # Padding character
 padding_char = '_'
 
-# Create a list populated with temperature values
-#tempList = []   #TODO: replace list with dictionary using date/time as the keys
-
 # FUNCTIONS
 #=======================================================================================================================================
 
@@ -36,30 +38,12 @@ def get_last_line():
     file_list = glob.glob(path + '/' + file_prefix + '*.csv')
     file_list.sort()
     datafile = file_list[-1] #most recent data file
-
     with open(datafile, 'rb') as f:
         f.seek(-2, os.SEEK_END)
         while f.read(1) != b'\n':
             f.seek(-2, os.SEEK_CUR)
         last_line = (f.readline().decode())
         return(last_line)
-
-# Function to determine minimum and maximum temperature values in file
-def get_min_max_temp():
-    file_list = glob.glob(path + '/' + file_prefix + '*.csv')
-    file_list.sort()
-    datafile = file_list[-1] # most recent data file
-    datafile2 = file_list[-2] # second most recent data file
-
-    df = pd.read_csv(datafile) # populates dataframe
-    df2 = pd.read_csv(datafile2)
-
-    min_temp1 = df[' temperature'].min()
-    max_temp1 = df[' temperature'].max()
-
-    min_temp2 = df2[' temperature'].min()
-    max_temp2 = df2[' temperature'].max()
-
 
 # Function to update background color variable based on air quality index
 def update_bg_color(PM_type):
@@ -114,26 +98,20 @@ def update_max_temp_title_label():
     max_temp_title_label.after(5000, update_max_temp_title_label)
 
 def update_min_temp_data_label():
-    raw_data_line = get_last_line().rstrip()
-    temperature = raw_data_line.split(',')[2]
-
-    temperature = float(temperature)
+    min_temperat, dt_min_temperat, max_temperat, dt_max_temperat = extrema.get_extrema(last_n_hours = MIN_MAX_TIME_RANGE)
 
     min_temp_data_label['bg'] = update_bg_color('0')
 
-    min_temp_data_label['text'] = "{:6.1f}".format(temperature)
+    min_temp_data_label['text'] = "{:6.1f}".format(min_temperat)
 
     min_temp_data_label.after(5000, update_min_temp_data_label)
 
 def update_max_temp_data_label():
-    raw_data_line = get_last_line().rstrip()
-    temperature = raw_data_line.split(',')[3]
-
-    temperature = float(temperature)
+    min_temperat, dt_min_temperat, max_temperat, dt_max_temperat = extrema.get_extrema(last_n_hours = MIN_MAX_TIME_RANGE)
 
     max_temp_data_label['bg'] = update_bg_color('0')
 
-    max_temp_data_label['text'] = "{:6.1f}".format(temperature)
+    max_temp_data_label['text'] = "{:6.1f}".format(max_temperat)
 
     max_temp_data_label.after(5000, update_max_temp_data_label)
 
@@ -167,7 +145,6 @@ def update_clock_label():
 # Function to update time_last_measurement widget
 # based on dt value from latest recording
 def update_time_last_measurement_data_label():
-    #current_time = tm.strftime('%I:%M:%S %p')
     raw_data_line = get_last_line().rstrip()
     dt_latest = raw_data_line.split(',')[0]
     dt_latest_obj = datetime.datetime.strptime(dt_latest, "%Y-%m-%d %H:%M:%S.%f")
