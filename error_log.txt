@@ -1,3 +1,0 @@
-/home/pi
-sh: 1: modprobe: not found
-sh: 1: modprobe: not found
