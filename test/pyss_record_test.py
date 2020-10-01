@@ -16,7 +16,7 @@ import random
 MIN_MAX_TIME_RANGE = 24
 
 # temp sensor settings
-SLEEP_DURATION = 60 #seconds
+SLEEP_DURATION = 5 #seconds
 log_name_prefix = "bucha_log"
 module_path = inspect.getfile(inspect.currentframe())
 module_dir = os.path.realpath(os.path.dirname(module_path))
@@ -33,7 +33,7 @@ max = 0
 min = 0
 maxcount = 0
 mincount = 0
-maxwin = 60*24 #number of measurements in 24 hours
+maxwin = SLEEP_DURATION*24 #number of measurements in 24 hours
 
 minStatCache = 0
 maxStatCache = 0
@@ -180,12 +180,12 @@ def log_buch_temp():
     now = datetime.now()
     date_stamp = now.strftime("%Y%m%d")
 
-    #log_filename = log_name_prefix + "_" + date_stamp + ".csv"
+    log_filename = log_name_prefix + "_" + date_stamp + ".csv"
     #log_file = data_log_dir + "/" + log_filename
 
-#better way to join path
-    log_filename = os.path.join(log_name_prefix, "_", date_stamp, ".csv")
-    log_file = os.path.join(data_log_dir, "/", log_filename)
+    log_file = os.path.join(data_log_dir, log_filename)
+    print(data_log_dir)
+    print(log_file)
     log_header = create_header(log_file)
 
     with open(log_file, "a") as log:
@@ -201,6 +201,10 @@ try:
     #will the function "log_buch_temp() see the following variables?"
     min = min_temperat
     max = max_temperat
+
+    print("min:" + str(min))
+    print("max:" + str(max))
+
 except:
     print("get_extrema could not find min/max")
 
@@ -208,9 +212,11 @@ while True:
     #bucha_temp = read_temp()
     bucha_temp = read_fake_temp()
     addNum(bucha_temp)
-    getMin()
-    getMax()
+    min = getMin()
+    max = getMax()
     log_buch_temp()
     #print("recording successful")
-    print("current temp: " + bucha_temp)
+    print("current temp: " + str(bucha_temp))
+    print("min:" + str(min))
+    print("max:" + str(max))
     time.sleep(SLEEP_DURATION)
